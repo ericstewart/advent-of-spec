@@ -3,7 +3,8 @@
    [aos.utils :as u :refer [deftest]]
    [aos.y2017.d06.data :refer [input answer-1 answer-2]]
    [clojure.test :refer [is testing]]
-   [clojure.string :as str]))
+   [clojure.string :as str]
+   [clojure.spec.test.alpha :as stest :refer [with-instrument-disabled]]))
 
 (defn data []
   (as-> input $
@@ -12,11 +13,12 @@
 
 (defn first-max-pos
   [nums]
-  (reduce (fn [[_ max-val :as m]
-               [_ cur-val :as c]]
-            (if (> cur-val max-val)
-              c m))
-          (map vector (range) nums)))
+  (let [res (reduce (fn [[_ max-val :as m]
+                         [_ cur-val :as c]]
+                      (if (> cur-val max-val)
+                        c m))
+                    (map vector (range) nums))]
+    res))
 
 (defn next-pos
   [state cur-pos]
@@ -61,8 +63,9 @@
 (defn solve-2 []
   (second (solve (first (solve (data))))))
 
-(deftest part-1
+(clojure.test/deftest part-1
+  (println "unstrument" (stest/unstrument `[range]))
   (is (= answer-1 (solve-1))))
 
-(deftest part-2
+(clojure.test/deftest part-2
   (is (= answer-2 (solve-2))))
